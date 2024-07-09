@@ -5,6 +5,7 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
     <title>Яндекс.Дом</title>
+    <link rel="preload" as="font" href="assets/lato.woff2" type="font/woff2" crossorigin="anonymous">
     <script src="vendors/react-with-dom.js"></script>
     <link rel="stylesheet" type="text/css" href="reset.css">
     <link rel="stylesheet" type="text/css" href="styles.css">
@@ -201,7 +202,6 @@
         }
     };
     const TABS_KEYS = Object.keys(TABS);
-
     function Main() {
         const ref = React.useRef();
         const initedRef = React.useRef(false);
@@ -227,13 +227,12 @@
         React.useEffect(() => {
             const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
             const sumHeight = sizes.reduce((acc, item) => acc + item.height, 0);
-
             const newHasRightScroll = sumWidth > ref.current.offsetWidth;
             if (newHasRightScroll !== hasRightScroll) {
                 setHasRightScroll(newHasRightScroll);
             }
         });
-
+        let sum = 1200
         const onArrowCLick = () => {
             const scroller = ref.current.querySelector('.section__panel:not(.section__panel_hidden)');
             if (scroller) {
@@ -241,8 +240,14 @@
                     left: scroller.scrollLeft + 400,
                     behavior: 'smooth'
                 });
+                if (scroller.scrollLeft + 400 > sum) {
+                    TABS.all.items = TABS.all.items.concat(TABS.all.items)
+
+                    console.log(12);
+                }
             }
         };
+
 
         return <main className="main">
             <section className="section main__general">
