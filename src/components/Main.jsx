@@ -130,55 +130,45 @@ const TABS = {
     ],
   },
 };
-for (let i = 0; i < 6; ++i) {
-  TABS.all.items = [].concat(TABS.all.items, TABS.all.items);
-}
+
+
 const TABS_KEYS = Object.keys(TABS);
 
 export default function Main() {
-  const ref = React.useRef();
-  const initedRef = React.useRef(false);
-  const [activeTab, setActiveTab] = React.useState("");
-  const [hasRightScroll, setHasRightScroll] = React.useState(false);
+  const ref = useRef();
+  const initedRef = useRef(false);
+  const [activeTab, setActiveTab] = useState("");
+  const [hasRightScroll, setHasRightScroll] = useState(false);
+  const [items, setItems] = useState(TABS.all.items);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!activeTab && !initedRef.current) {
       initedRef.current = true;
       setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
     }
-  });
+  }, [activeTab]);
 
   const onSelectInput = (event) => {
     setActiveTab(event.target.value);
   };
 
-  let sizes = new Array(TABS.all.items.length);
-  let i = 0;
-  const onSize = (size) => {
-    sizes[i] = size;
-    ++i;
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      const scroller = ref.current?.querySelector(".section__panel:not(.section__panel_hidden)");
+      if (scroller) {
+        const { scrollLeft, scrollWidth, clientWidth } = scroller;
+        if (scrollLeft + clientWidth >= scrollWidth - 400) {
+          setItems((prevItems) => [...prevItems, ...TABS.all.items]);
+        }
+      }
+    };
 
-  React.useEffect(() => {
-    const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
-
-    const newHasRightScroll = sumWidth > ref.current.offsetWidth;
-    if (newHasRightScroll !== hasRightScroll) {
-      setHasRightScroll(newHasRightScroll);
-    }
-  });
-
-  const onArrowCLick = () => {
-    const scroller = ref.current.querySelector(
-      ".section__panel:not(.section__panel_hidden)"
-    );
+    const scroller = ref.current?.querySelector(".section__panel:not(.section__panel_hidden)");
     if (scroller) {
-      scroller.scrollTo({
-        left: scroller.scrollLeft + 400,
-        behavior: "smooth",
-      });
+      scroller.addEventListener("scroll", handleScroll);
+      return () => scroller.removeEventListener("scroll", handleScroll);
     }
-  };
+  }, [items, activeTab]);
 
   return (
     <main className="main">
@@ -328,14 +318,14 @@ export default function Main() {
               aria-labelledby={`tab_${key}`}
             >
               <ul className="section__panel-list">
-                {TABS[key].items.map((item, index) => (
-                  <Event key={index} {...item} onSize={onSize} />
+                {items.map((item, index) => (
+                  <Event key={index} {...item} />
                 ))}
               </ul>
             </div>
           ))}
           {hasRightScroll && (
-            <div className="section__arrow" onClick={onArrowCLick}></div>
+            <div className="section__arrow" onClick={onArrowClick}></div>
           )}
         </div>
       </section>
