@@ -1,59 +1,7 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import Event from "./Event";
-
 const TABS = {
   all: {
     title: "Все",
     items: [
-      {
-        icon: "light2",
-        iconLabel: "Освещение",
-        title: "Xiaomi Yeelight LED Smart Bulb",
-        subtitle: "Включено",
-      },
-      {
-        icon: "light",
-        iconLabel: "Освещение",
-        title: "D-Link Omna 180 Cam",
-        subtitle: "Включится в 17:00",
-      },
-      {
-        icon: "temp",
-        iconLabel: "Температура",
-        title: "Elgato Eve Degree Connected",
-        subtitle: "Выключено до 17:00",
-      },
-      {
-        icon: "light",
-        iconLabel: "Освещение",
-        title: "LIFX Mini Day & Dusk A60 E27",
-        subtitle: "Включится в 17:00",
-      },
-      {
-        icon: "light2",
-        iconLabel: "Освещение",
-        title: "Xiaomi Mi Air Purifier 2S",
-        subtitle: "Включено",
-      },
-      {
-        icon: "light",
-        iconLabel: "Освещение",
-        title: "Philips Zhirui",
-        subtitle: "Включено",
-      },
-      {
-        icon: "light",
-        iconLabel: "Освещение",
-        title: "Philips Zhirui",
-        subtitle: "Включено",
-      },
-      {
-        icon: "light2",
-        iconLabel: "Освещение",
-        title: "Xiaomi Mi Air Purifier 2S",
-        subtitle: "Включено",
-      },
-      // Repeating items for the example
       {
         icon: "light2",
         iconLabel: "Освещение",
@@ -180,6 +128,11 @@ const TABS = {
   },
 };
 
+// Extend the "all" items for testing purposes
+for (let i = 0; i < 6; ++i) {
+  TABS.all.items = [].concat(TABS.all.items, TABS.all.items);
+}
+
 const TABS_KEYS = Object.keys(TABS);
 
 export default function Main() {
@@ -187,6 +140,7 @@ export default function Main() {
   const initedRef = useRef(false);
   const [activeTab, setActiveTab] = useState("");
   const [items, setItems] = useState(TABS.all.items.slice(0, 16));
+  const [hasRightScroll, setHasRightScroll] = useState(false);
 
   useEffect(() => {
     if (!activeTab && !initedRef.current) {
@@ -199,6 +153,22 @@ export default function Main() {
     setActiveTab(event.target.value);
   };
 
+  let sizes = new Array(TABS.all.items.length);
+  let i = 0;
+  const onSize = (size) => {
+    sizes[i] = size;
+    ++i;
+  };
+
+  useEffect(() => {
+    const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
+
+    const newHasRightScroll = sumWidth > ref.current.offsetWidth;
+    if (newHasRightScroll !== hasRightScroll) {
+      setHasRightScroll(newHasRightScroll);
+    }
+  }, [sizes, hasRightScroll]);
+
   useEffect(() => {
     const scroller = ref.current?.querySelector(".section__panel:not(.section__panel_hidden)");
 
@@ -206,7 +176,10 @@ export default function Main() {
       if (scroller) {
         const { scrollLeft, scrollWidth, clientWidth } = scroller;
         if (scrollLeft + clientWidth >= scrollWidth - 400) {
-          setItems((prevItems) => [...prevItems, ...TABS.all.items.slice(0, 16)]);
+          setItems((prevItems) => {
+            const newItems = TABS[activeTab].items.slice(prevItems.length, prevItems.length + 16);
+            return [...prevItems, ...newItems];
+          });
         }
       }
     };
@@ -215,11 +188,22 @@ export default function Main() {
       scroller.addEventListener("scroll", onScroll);
       return () => scroller.removeEventListener("scroll", onScroll);
     }
-  }, [items]);
+  }, [activeTab, items]);
 
   useEffect(() => {
     setItems(TABS[activeTab].items.slice(0, 16));
   }, [activeTab]);
+
+  const onArrowClick = () => {
+    const scroller = ref.current.querySelector(".section__panel:not(.section__panel_hidden)");
+    if (scroller) {
+      scroller.scrollTo({
+        left: scroller.scrollLeft + 400,
+        behavior: "smooth",
+      });
+    }
+  };
+
 
   return (
     <main className="main">
@@ -369,12 +353,15 @@ export default function Main() {
               aria-labelledby={`tab_${key}`}
             >
               <ul className="section__panel-list">
-                {items.map((item, index) => (
-                  <Event key={index} {...item} />
+                {TABS[key].items.map((item, index) => (
+                  <Event key={index} {...item} onSize={onSize} />
                 ))}
               </ul>
             </div>
           ))}
+          {hasRightScroll && (
+            <div className="section__arrow" onClick={onArrowCLick}></div>
+          )}
         </div>
       </section>
     </main>
