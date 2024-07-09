@@ -236,7 +236,6 @@ export default function Main() {
           </ul>
         </div>
       </section>
-
       <section className="section main__scripts">
         <h2 className="section__title section__title-header">
           Избранные сценарии
