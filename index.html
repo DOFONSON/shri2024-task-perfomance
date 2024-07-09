@@ -36,7 +36,7 @@
 </footer>
 
 <script src="vendors/babel.min.js"></script>
-<script type="text/babel">
+<script type="text/babel" defer>
     function Header() {
         let [expanded, setExpanded] = React.useState(false);
         let [toggled, setToggled] = React.useState(false);
@@ -202,7 +202,7 @@
         }
     };
     for (let i = 0; i < 6; ++i) {
-        TABS.all.items = [...TABS.all.items, ...TABS.all.items];
+        TABS.all.items = TABS.all.items.concat(TABS.all.items)
     }
     const TABS_KEYS = Object.keys(TABS);
 
@@ -241,10 +241,8 @@
         const onArrowCLick = () => {
             const scroller = ref.current.querySelector('.section__panel:not(.section__panel_hidden)');
             if (scroller) {
-                scroller.scrollTo({
-                    left: scroller.scrollLeft + 400,
-                    behavior: 'smooth'
-                });
+                const scrollAmount = 400;
+                scroller.scrollBy({ left: scrollAmount, behavior: 'smooth' });
             }
         };
 
