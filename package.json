@@ -2,9 +2,12 @@
   "name": "performance-yandex-homework",
   "version": "1.0.0",
   "main": "index.js",
+  "homepage": "https://dofonson.github.io/shri2024-task-perfomance/",
   "scripts": {
     "build_webpack": "webpack --mode=production --node-env=production",
-    "push_to_github_pages": "git subtree push --prefix=dist origin gh-pages"
+    "push_to_github_pages": "git subtree push --prefix=dist origin gh-pages",
+    "predeploy": "npm run build_webpack",
+    "deploy": "npm run push_to_github_pages"
   },
   "author": "",
   "license": "ISC",
@@ -14,6 +17,7 @@
     "@babel/preset-react": "^7.22.5",
     "babel-preset-minify": "^0.5.2",
     "css-minimizer-webpack-plugin": "^5.0.1",
+    "gh-pages": "^6.1.1",
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
