@@ -201,7 +201,11 @@
             }]
         }
     };
+    for (let i = 0; i < 6; ++i) {
+        TABS.all.items = [...TABS.all.items, ...TABS.all.items];
+    }
     const TABS_KEYS = Object.keys(TABS);
+
     function Main() {
         const ref = React.useRef();
         const initedRef = React.useRef(false);
@@ -227,12 +231,13 @@
         React.useEffect(() => {
             const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
             const sumHeight = sizes.reduce((acc, item) => acc + item.height, 0);
+
             const newHasRightScroll = sumWidth > ref.current.offsetWidth;
             if (newHasRightScroll !== hasRightScroll) {
                 setHasRightScroll(newHasRightScroll);
             }
         });
-        let sum = 1200
+
         const onArrowCLick = () => {
             const scroller = ref.current.querySelector('.section__panel:not(.section__panel_hidden)');
             if (scroller) {
@@ -240,14 +245,8 @@
                     left: scroller.scrollLeft + 400,
                     behavior: 'smooth'
                 });
-                if (scroller.scrollLeft + 400 > sum) {
-                    TABS.all.items = TABS.all.items.concat(TABS.all.items)
-
-                    console.log(12);
-                }
             }
         };
-
 
         return <main className="main">
             <section className="section main__general">
