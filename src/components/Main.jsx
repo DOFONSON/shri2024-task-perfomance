@@ -130,45 +130,55 @@ const TABS = {
     ],
   },
 };
-
-
+for (let i = 0; i < 6; ++i) {
+  TABS.all.items = [].concat(TABS.all.items, TABS.all.items);
+}
 const TABS_KEYS = Object.keys(TABS);
 
 export default function Main() {
-  const ref = useRef();
-  const initedRef = useRef(false);
-  const [activeTab, setActiveTab] = useState("");
-  const [hasRightScroll, setHasRightScroll] = useState(false);
-  const [items, setItems] = useState(TABS.all.items);
+  const ref = React.useRef();
+  const initedRef = React.useRef(false);
+  const [activeTab, setActiveTab] = React.useState("");
+  const [hasRightScroll, setHasRightScroll] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!activeTab && !initedRef.current) {
       initedRef.current = true;
       setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
     }
-  }, [activeTab]);
+  });
 
   const onSelectInput = (event) => {
     setActiveTab(event.target.value);
   };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      const scroller = ref.current?.querySelector(".section__panel:not(.section__panel_hidden)");
-      if (scroller) {
-        const { scrollLeft, scrollWidth, clientWidth } = scroller;
-        if (scrollLeft + clientWidth >= scrollWidth - 400) {
-          setItems((prevItems) => [...prevItems, ...TABS.all.items]);
-        }
-      }
-    };
+  let sizes = new Array(TABS.all.items.length);
+  let i = 0;
+  const onSize = (size) => {
+    sizes[i] = size;
+    ++i;
+  };
 
-    const scroller = ref.current?.querySelector(".section__panel:not(.section__panel_hidden)");
-    if (scroller) {
-      scroller.addEventListener("scroll", handleScroll);
-      return () => scroller.removeEventListener("scroll", handleScroll);
+  React.useEffect(() => {
+    const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
+
+    const newHasRightScroll = sumWidth > ref.current.offsetWidth;
+    if (newHasRightScroll !== hasRightScroll) {
+      setHasRightScroll(newHasRightScroll);
     }
-  }, [items, activeTab]);
+  });
+
+  const onArrowCLick = () => {
+    const scroller = ref.current.querySelector(
+      ".section__panel:not(.section__panel_hidden)"
+    );
+    if (scroller) {
+      scroller.scrollTo({
+        left: scroller.scrollLeft + 400,
+        behavior: "smooth",
+      });
+    }
+  };
 
   return (
     <main className="main">
@@ -318,14 +328,14 @@ export default function Main() {
               aria-labelledby={`tab_${key}`}
             >
               <ul className="section__panel-list">
-                {items.map((item, index) => (
-                  <Event key={index} {...item} />
+                {TABS[key].items.map((item, index) => (
+                  <Event key={index} {...item} onSize={onSize} />
                 ))}
               </ul>
             </div>
           ))}
           {hasRightScroll && (
-            <div className="section__arrow" onClick={onArrowClick}></div>
+            <div className="section__arrow" onClick={onArrowCLick}></div>
           )}
         </div>
       </section>
