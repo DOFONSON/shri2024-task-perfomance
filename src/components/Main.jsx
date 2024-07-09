@@ -1,3 +1,6 @@
+import React, { useCallback } from "react";
+import Event from "./Event";
+
 const TABS = {
   all: {
     title: "Все",
@@ -127,27 +130,23 @@ const TABS = {
     ],
   },
 };
-
-// Extend the "all" items for testing purposes
 for (let i = 0; i < 6; ++i) {
   TABS.all.items = [].concat(TABS.all.items, TABS.all.items);
 }
-
 const TABS_KEYS = Object.keys(TABS);
 
 export default function Main() {
-  const ref = useRef();
-  const initedRef = useRef(false);
-  const [activeTab, setActiveTab] = useState("");
-  const [items, setItems] = useState(TABS.all.items.slice(0, 16));
-  const [hasRightScroll, setHasRightScroll] = useState(false);
+  const ref = React.useRef();
+  const initedRef = React.useRef(false);
+  const [activeTab, setActiveTab] = React.useState("");
+  const [hasRightScroll, setHasRightScroll] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!activeTab && !initedRef.current) {
       initedRef.current = true;
-      setActiveTab(new URLSearchParams(window.location.search).get("tab") || "all");
+      setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
     }
-  }, [activeTab]);
+  });
 
   const onSelectInput = (event) => {
     setActiveTab(event.target.value);
@@ -160,42 +159,19 @@ export default function Main() {
     ++i;
   };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
 
     const newHasRightScroll = sumWidth > ref.current.offsetWidth;
     if (newHasRightScroll !== hasRightScroll) {
       setHasRightScroll(newHasRightScroll);
     }
-  }, [sizes, hasRightScroll]);
+  });
 
-  useEffect(() => {
-    const scroller = ref.current?.querySelector(".section__panel:not(.section__panel_hidden)");
-
-    const onScroll = () => {
-      if (scroller) {
-        const { scrollLeft, scrollWidth, clientWidth } = scroller;
-        if (scrollLeft + clientWidth >= scrollWidth - 400) {
-          setItems((prevItems) => {
-            const newItems = TABS[activeTab].items.slice(prevItems.length, prevItems.length + 16);
-            return [...prevItems, ...newItems];
-          });
-        }
-      }
-    };
-
-    if (scroller) {
-      scroller.addEventListener("scroll", onScroll);
-      return () => scroller.removeEventListener("scroll", onScroll);
-    }
-  }, [activeTab, items]);
-
-  useEffect(() => {
-    setItems(TABS[activeTab].items.slice(0, 16));
-  }, [activeTab]);
-
-  const onArrowClick = () => {
-    const scroller = ref.current.querySelector(".section__panel:not(.section__panel_hidden)");
+  const onArrowCLick = () => {
+    const scroller = ref.current.querySelector(
+      ".section__panel:not(.section__panel_hidden)"
+    );
     if (scroller) {
       scroller.scrollTo({
         left: scroller.scrollLeft + 400,
@@ -203,7 +179,6 @@ export default function Main() {
       });
     }
   };
-
 
   return (
     <main className="main">
