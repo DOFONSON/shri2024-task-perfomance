@@ -53,6 +53,55 @@ const TABS = {
         title: "Xiaomi Mi Air Purifier 2S",
         subtitle: "Включено",
       },
+      // Repeating items for the example
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Yeelight LED Smart Bulb",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "D-Link Omna 180 Cam",
+        subtitle: "Включится в 17:00",
+      },
+      {
+        icon: "temp",
+        iconLabel: "Температура",
+        title: "Elgato Eve Degree Connected",
+        subtitle: "Выключено до 17:00",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "LIFX Mini Day & Dusk A60 E27",
+        subtitle: "Включится в 17:00",
+      },
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Mi Air Purifier 2S",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "Philips Zhirui",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light",
+        iconLabel: "Освещение",
+        title: "Philips Zhirui",
+        subtitle: "Включено",
+      },
+      {
+        icon: "light2",
+        iconLabel: "Освещение",
+        title: "Xiaomi Mi Air Purifier 2S",
+        subtitle: "Включено",
+      },
     ],
   },
   kitchen: {
@@ -137,7 +186,7 @@ export default function Main() {
   const ref = useRef();
   const initedRef = useRef(false);
   const [activeTab, setActiveTab] = useState("");
-  const [items, setItems] = useState(TABS.all.items.slice(0, 8));
+  const [items, setItems] = useState(TABS.all.items.slice(0, 16));
 
   useEffect(() => {
     if (!activeTab && !initedRef.current) {
@@ -157,7 +206,7 @@ export default function Main() {
       if (scroller) {
         const { scrollLeft, scrollWidth, clientWidth } = scroller;
         if (scrollLeft + clientWidth >= scrollWidth - 400) {
-          setItems((prevItems) => [...prevItems, ...TABS.all.items.slice(0, 8)]);
+          setItems((prevItems) => [...prevItems, ...TABS.all.items.slice(0, 16)]);
         }
       }
     };
@@ -167,6 +216,10 @@ export default function Main() {
       return () => scroller.removeEventListener("scroll", onScroll);
     }
   }, [items]);
+
+  useEffect(() => {
+    setItems(TABS[activeTab].items.slice(0, 16));
+  }, [activeTab]);
 
   return (
     <main className="main">
