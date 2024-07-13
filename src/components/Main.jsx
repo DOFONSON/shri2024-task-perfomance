@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback } from "react";
 import Event from "./Event";
 
 const TABS = {
@@ -136,41 +136,40 @@ for (let i = 0; i < 6; ++i) {
 }
 const TABS_KEYS = Object.keys(TABS);
 
-const Main = () => {
-  const ref = useRef();
-  const initedRef = useRef(false);
-  const [activeTab, setActiveTab] = useState("");
-  const [hasRightScroll, setHasRightScroll] = useState(false);
-  const [sizes, setSizes] = useState(new Array(TABS.all.items.length).fill({ width: 0 }));
+export default function Main() {
+  const ref = React.useRef();
+  const initedRef = React.useRef(false);
+  const [activeTab, setActiveTab] = React.useState("");
+  const [hasRightScroll, setHasRightScroll] = React.useState(false);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!activeTab && !initedRef.current) {
       initedRef.current = true;
-      setActiveTab(new URLSearchParams(window.location.search).get("tab") || "all");
+      setActiveTab(new URLSearchParams(location.search).get("tab") || "all");
     }
-  }, [activeTab]);
+  });
 
-  const onSelectInput = useCallback((event) => {
+  const onSelectInput = (event) => {
     setActiveTab(event.target.value);
-  }, []);
+  };
 
-  const onSize = useCallback((index, size) => {
-    setSizes(prevSizes => {
-      const newSizes = [...prevSizes];
-      newSizes[index] = size;
-      return newSizes;
-    });
-  }, []);
+  let sizes = new Array(TABS.all.items.length);
+  let i = 0;
+  const onSize = (size) => {
+    sizes[i] = size;
+    ++i;
+  };
 
-  useEffect(() => {
+  React.useEffect(() => {
     const sumWidth = sizes.reduce((acc, item) => acc + item.width, 0);
+
     const newHasRightScroll = sumWidth > ref.current.offsetWidth;
     if (newHasRightScroll !== hasRightScroll) {
       setHasRightScroll(newHasRightScroll);
     }
-  }, [sizes, hasRightScroll]);
+  });
 
-  const onArrowClick = useCallback(() => {
+  const onArrowCLick = () => {
     const scroller = ref.current.querySelector(
       ".section__panel:not(.section__panel_hidden)"
     );
@@ -180,7 +179,7 @@ const Main = () => {
         behavior: "smooth",
       });
     }
-  }, []);
+  };
 
   return (
     <main className="main">
@@ -330,18 +329,16 @@ const Main = () => {
             >
               <ul className="section__panel-list">
                 {TABS[key].items.map((item, index) => (
-                  <Event key={index} {...item} onSize={(size) => onSize(index, size)} />
+                  <Event key={index} {...item} onSize={onSize} />
                 ))}
               </ul>
             </div>
           ))}
           {hasRightScroll && (
-            <div className="section__arrow" onClick={onArrowClick}></div>
+            <div className="section__arrow" onClick={onArrowCLick}></div>
           )}
         </div>
       </section>
     </main>
   );
-};
-
-export default React.memo(Main);
+}
