@@ -32,11 +32,7 @@ export default function Header() {
         }
       >
         <li className="header__item">
-          <a
-            className="header__link header__link_current"
-            href="/"
-            aria-current="page"
-          >
+          <a className="header__link header__link_current" href="/" aria-current="page" >
             Сводка
           </a>
         </li>

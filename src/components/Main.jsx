@@ -169,6 +169,7 @@ export default function Main() {
     }
   });
 
+  
   const onArrowCLick = () => {
     const scroller = ref.current.querySelector(
       ".section__panel:not(.section__panel_hidden)"
